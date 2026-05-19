@@ -1,0 +1,315 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GD Demon Roulette</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        h1 {
+            font-family: 'Righteous', cursive;
+            color: #ffcc00;
+            font-size: 36px;
+            text-shadow: 3px 3px 0px #000, 0 0 15px rgba(255, 204, 0, 0.5);
+            margin-bottom: 10px;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(30, 30, 40, 0.85);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.7);
+            border: 3px solid #334155;
+            backdrop-filter: blur(5px);
+        }
+        .target-box {
+            background: #000;
+            border: 2px solid #ffcc00;
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 12px;
+            font-family: 'Righteous', cursive;
+            font-size: 24px;
+            color: #ffcc00;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(255, 204, 0, 0.3);
+        }
+        #roulette-box {
+            margin: 20px 0;
+            padding: 30px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #475569;
+            transition: all 0.3s ease;
+        }
+        .level-name {
+            font-family: 'Righteous', cursive;
+            font-size: 32px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px #000;
+        }
+        .level-author {
+            font-size: 18px;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+        }
+        .difficulty {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 5px 15px;
+            border-radius: 8px;
+            letter-spacing: 1px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid currentColor;
+        }
+        
+        /* Цвета сложностей */
+        .extreme { color: #ff3333; text-shadow: 0 0 5px #ff3333; }
+        .insane { color: #ff33ff; text-shadow: 0 0 5px #ff33ff; }
+        .hard { color: #ff6666; text-shadow: 0 0 5px #ff6666; }
+        .medium { color: #ffcc66; text-shadow: 0 0 5px #ffcc66; }
+        .easy { color: #66ccff; text-shadow: 0 0 5px #66ccff; }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        button {
+            font-family: 'Righteous', cursive;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-roll {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 6px #1d4ed8;
+        }
+        .btn-roll:active {
+            box-shadow: 0 0px #1d4ed8;
+            transform: translateY(6px);
+        }
+        .btn-roll:disabled {
+            background-color: #475569;
+            box-shadow: 0 6px #334155;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-done {
+            background-color: #22c55e;
+            color: white;
+            box-shadow: 0 6px #15803d;
+            display: none; /* Скрыта до прокрута */
+        }
+        .btn-done:active {
+            box-shadow: 0 0px #15803d;
+            transform: translateY(6px);
+        }
+
+        .history-panel {
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: left;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #334155;
+        }
+        .history-panel h3 {
+            font-family: 'Righteous', cursive;
+            margin-top: 0;
+            color: #94a3b8;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 10px;
+        }
+        .history-item {
+            padding: 8px 10px;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-percent {
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        
+        /* Скроллбар для истории */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e1e24; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>DEMON ROULETTE</h1>
+    
+    <div class="container">
+        <div class="target-box">
+            ЦЕЛЬ: <span id="target-percent">1</span>%
+        </div>
+        
+        <div id="roulette-box">
+            <div class="level-name" style="color: #94a3b8;">Нажми "КРУТИТЬ"</div>
+        </div>
+
+        <div class="controls">
+            <button id="btn-roll" class="btn-roll" onclick="rollDemon()">Крутить</button>
+            <button id="btn-done" class="btn-done" onclick="completeLevel()">Пройдено!</button>
+        </div>
+
+        <div class="history-panel">
+            <h3>ИСТОРИЯ ПРОХОЖДЕНИЙ</h3>
+            <div id="history-list">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        const demons = [
+            // Extreme Demon
+            { name: "HIGH TIDE", author: "by GOD", diff: "Extreme Demon", class: "extreme" },
+            { name: "HELL SIDE", author: "by GOD", diff: "Extreme Demon", class: "extreme" },
+            { name: "DETROID", author: "by GOD", diff: "Extreme Demon", class: "extreme" },
+            { name: "DARK ABYSS", author: "by GOD", diff: "Extreme Demon", class: "extreme" },
+            { name: "SILENT HELL", author: "by GOD", diff: "Extreme Demon", class: "extreme" },
+            { name: "EXSANGUINATION", author: "by sarygdps", diff: "Extreme Demon", class: "extreme" },
+
+            // Insane Demon
+            { name: "POLARISE LIGHT", author: "by GOD", diff: "Insane Demon", class: "insane" },
+            { name: "POLAR LIGHTING", author: "by GOD", diff: "Insane Demon", class: "insane" },
+            { name: "SILENT CIRCLES NERF", author: "by THEREALDASHER", diff: "Insane Demon", class: "insane" },
+            { name: "ROAD TO HEAVEN", author: "by GOD", diff: "Insane Demon", class: "insane" },
+
+            // Hard Demon
+            { name: "LETS FLY AWAY", author: "by PARTIZANGD", diff: "Hard Demon", class: "hard" },
+            { name: "TIPO ANATHEMA", author: "by NONAMETY", diff: "Hard Demon", class: "hard" },
+            { name: "INFINITY WAVE", author: "by GOD", diff: "Hard Demon", class: "hard" },
+            { name: "ROUND AND ROUND", author: "by PARTIZANGD", diff: "Hard Demon", class: "hard" },
+            { name: "FORMODA", author: "by GOD", diff: "Hard Demon", class: "hard" },
+
+            // Medium Demon
+            { name: "TAKE A BREATH", author: "by GOD", diff: "Medium Demon", class: "medium" },
+            { name: "RED SPEAR", author: "by GOD", diff: "Medium Demon", class: "medium" },
+            { name: "ABANDONED CITY", author: "by GOD", diff: "Medium Demon", class: "medium" },
+            { name: "THE COLLAB", author: "by sarygdps", diff: "Medium Demon", class: "medium" },
+            { name: "HEADRUSH", author: "by NONAMETY", diff: "Medium Demon", class: "medium" },
+
+            // Easy Demon
+            { name: "RED WORLD", author: "by sarygdps", diff: "Easy Demon", class: "easy" },
+            { name: "PROFITABLE PASSION", author: "by PARTIZANGD", diff: "Easy Demon", class: "easy" },
+            { name: "BLOCK3KA", author: "by DASUKE344", diff: "Easy Demon", class: "easy" },
+            { name: "GOLDEN EMERALD", author: "by GOD", diff: "Easy Demon", class: "easy" },
+            { name: "BANANCHIKI", author: "by YOGURT", diff: "Easy Demon", class: "easy" },
+            { name: "WONDERLANDS", author: "by GOD", diff: "Easy Demon", class: "easy" }
+        ];
+
+        let currentTarget = 1;
+        let currentLevel = null;
+        let isRolling = false;
+
+        function rollDemon() {
+            if (isRolling || currentTarget > 100) return;
+            isRolling = true;
+            
+            const displayBox = document.getElementById('roulette-box');
+            const btnRoll = document.getElementById('btn-roll');
+            const btnDone = document.getElementById('btn-done');
+            
+            btnRoll.disabled = true;
+            btnDone.style.display = 'none';
+            displayBox.style.borderColor = '#475569';
+            
+            let counter = 0;
+            // Быстрая смена названий
+            const interval = setInterval(() => {
+                const randomTemp = demons[Math.floor(Math.random() * demons.length)];
+                displayBox.innerHTML = `<div class="level-name" style="color: #fff;">${randomTemp.name}</div>`;
+                counter++;
+                
+                if (counter > 12) {
+                    clearInterval(interval);
+                    // Финальный выбор
+                    currentLevel = demons[Math.floor(Math.random() * demons.length)];
+                    displayBox.innerHTML = `
+                        <div class="level-name">${currentLevel.name}</div>
+                        <div class="level-author">${currentLevel.author}</div>
+                        <div class="difficulty ${currentLevel.class}">${currentLevel.diff}</div>
+                    `;
+                    displayBox.style.borderColor = '#ffcc00'; // Подсветка рамки
+                    
+                    isRolling = false;
+                    btnRoll.disabled = false;
+                    btnRoll.innerText = "ПЕРЕКРУТИТЬ (СКИП)";
+                    btnDone.style.display = 'block'; // Показываем кнопку "Пройдено"
+                }
+            }, 50); // Скорость анимации рулетки
+        }
+
+        function completeLevel() {
+            if (!currentLevel || currentTarget > 100) return;
+
+            // Добавляем в историю
+            const historyList = document.getElementById('history-list');
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <span><span class="difficulty ${currentLevel.class}" style="font-size:10px; padding:2px 5px; margin-right:8px;">${currentLevel.diff.split(' ')[0]}</span> ${currentLevel.name}</span>
+                <span class="history-percent">${currentTarget}%</span>
+            `;
+            // Вставляем сверху списка
+            historyList.insertBefore(historyItem, historyList.firstChild);
+
+            // Увеличиваем цель
+            currentTarget++;
+            
+            if (currentTarget > 100) {
+                document.getElementById('target-percent').innerText = "GG!";
+                document.getElementById('roulette-box').innerHTML = `<div class="level-name" style="color: #22c55e;">РУЛЕТКА ПРОЙДЕНА!</div>`;
+                document.getElementById('btn-roll').style.display = 'none';
+                document.getElementById('btn-done').style.display = 'none';
+            } else {
+                document.getElementById('target-percent').innerText = currentTarget;
+                
+                // Сброс интерфейса для следующего круга
+                document.getElementById('roulette-box').innerHTML = `<div class="level-name" style="color: #94a3b8;">ГОТОВ К ${currentTarget}%?</div>`;
+                document.getElementById('roulette-box').style.borderColor = '#475569';
+                document.getElementById('btn-roll').innerText = "КРУТИТЬ";
+                document.getElementById('btn-done').style.display = 'none';
+                currentLevel = null;
+            }
+        }
+    </script>
+
+</body>
+</html>
