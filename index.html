@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -125,7 +125,7 @@
             background-color: #22c55e;
             color: white;
             box-shadow: 0 6px #15803d;
-            display: none; /* Скрыта до прокрута */
+            display: none;
         }
         .btn-done:active {
             box-shadow: 0 0px #15803d;
@@ -164,7 +164,6 @@
             color: #ffcc00;
         }
         
-        /* Скроллбар для истории */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #1e1e24; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
@@ -224,6 +223,7 @@
             { name: "ABANDONED CITY", author: "by GOD", diff: "Medium Demon", class: "medium" },
             { name: "THE COLLAB", author: "by sarygdps", diff: "Medium Demon", class: "medium" },
             { name: "HEADRUSH", author: "by NONAMETY", diff: "Medium Demon", class: "medium" },
+            { name: "PONT", author: "by GOD", diff: "Medium Demon", class: "medium" },
 
             // Easy Demon
             { name: "RED WORLD", author: "by sarygdps", diff: "Easy Demon", class: "easy" },
@@ -251,7 +251,6 @@
             displayBox.style.borderColor = '#475569';
             
             let counter = 0;
-            // Быстрая смена названий
             const interval = setInterval(() => {
                 const randomTemp = demons[Math.floor(Math.random() * demons.length)];
                 displayBox.innerHTML = `<div class="level-name" style="color: #fff;">${randomTemp.name}</div>`;
@@ -259,27 +258,25 @@
                 
                 if (counter > 12) {
                     clearInterval(interval);
-                    // Финальный выбор
                     currentLevel = demons[Math.floor(Math.random() * demons.length)];
                     displayBox.innerHTML = `
                         <div class="level-name">${currentLevel.name}</div>
                         <div class="level-author">${currentLevel.author}</div>
                         <div class="difficulty ${currentLevel.class}">${currentLevel.diff}</div>
                     `;
-                    displayBox.style.borderColor = '#ffcc00'; // Подсветка рамки
+                    displayBox.style.borderColor = '#ffcc00';
                     
                     isRolling = false;
                     btnRoll.disabled = false;
                     btnRoll.innerText = "ПЕРЕКРУТИТЬ (СКИП)";
-                    btnDone.style.display = 'block'; // Показываем кнопку "Пройдено"
+                    btnDone.style.display = 'block';
                 }
-            }, 50); // Скорость анимации рулетки
+            }, 50);
         }
 
         function completeLevel() {
             if (!currentLevel || currentTarget > 100) return;
 
-            // Добавляем в историю
             const historyList = document.getElementById('history-list');
             const historyItem = document.createElement('div');
             historyItem.className = 'history-item';
@@ -287,10 +284,8 @@
                 <span><span class="difficulty ${currentLevel.class}" style="font-size:10px; padding:2px 5px; margin-right:8px;">${currentLevel.diff.split(' ')[0]}</span> ${currentLevel.name}</span>
                 <span class="history-percent">${currentTarget}%</span>
             `;
-            // Вставляем сверху списка
             historyList.insertBefore(historyItem, historyList.firstChild);
 
-            // Увеличиваем цель
             currentTarget++;
             
             if (currentTarget > 100) {
@@ -300,8 +295,6 @@
                 document.getElementById('btn-done').style.display = 'none';
             } else {
                 document.getElementById('target-percent').innerText = currentTarget;
-                
-                // Сброс интерфейса для следующего круга
                 document.getElementById('roulette-box').innerHTML = `<div class="level-name" style="color: #94a3b8;">ГОТОВ К ${currentTarget}%?</div>`;
                 document.getElementById('roulette-box').style.borderColor = '#475569';
                 document.getElementById('btn-roll').innerText = "КРУТИТЬ";
