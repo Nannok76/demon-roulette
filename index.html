@@ -179,11 +179,11 @@
         </div>
         
         <div id="roulette-box">
-            <div class="level-name" style="color: #94a3b8;">Нажми "КРУТИТЬ"</div>
+            <div id="status-text" class="level-name" style="color: #94a3b8;">Подключение к базе данных...</div>
         </div>
 
         <div class="controls">
-            <button id="btn-roll" class="btn-roll" onclick="rollDemon()">Крутить</button>
+            <button id="btn-roll" class="btn-roll" onclick="rollDemon()" disabled>Загрузка...</button>
             <button id="btn-done" class="btn-done" onclick="completeLevel()">Пройдено!</button>
         </div>
 
@@ -195,51 +195,66 @@
     </div>
 
     <script>
-        const demons = [
-            // Extreme Demon
-            { name: "HIGH TIDE", author: "by GOD", diff: "Extreme Demon", class: "extreme" },
-            { name: "HELL SIDE", author: "by GOD", diff: "Extreme Demon", class: "extreme" },
-            { name: "DETROID", author: "by GOD", diff: "Extreme Demon", class: "extreme" },
-            { name: "DARK ABYSS", author: "by GOD", diff: "Extreme Demon", class: "extreme" },
-            { name: "SILENT HELL", author: "by GOD", diff: "Extreme Demon", class: "extreme" },
-            { name: "EXSANGUINATION", author: "by sarygdps", diff: "Extreme Demon", class: "extreme" },
-
-            // Insane Demon
-            { name: "POLARISE LIGHT", author: "by GOD", diff: "Insane Demon", class: "insane" },
-            { name: "POLAR LIGHTING", author: "by GOD", diff: "Insane Demon", class: "insane" },
-            { name: "SILENT CIRCLES NERF", author: "by THEREALDASHER", diff: "Insane Demon", class: "insane" },
-            { name: "ROAD TO HEAVEN", author: "by GOD", diff: "Insane Demon", class: "insane" },
-
-            // Hard Demon
-            { name: "LETS FLY AWAY", author: "by PARTIZANGD", diff: "Hard Demon", class: "hard" },
-            { name: "TIPO ANATHEMA", author: "by NONAMETY", diff: "Hard Demon", class: "hard" },
-            { name: "INFINITY WAVE", author: "by GOD", diff: "Hard Demon", class: "hard" },
-            { name: "ROUND AND ROUND", author: "by PARTIZANGD", diff: "Hard Demon", class: "hard" },
-            { name: "FORMODA", author: "by GOD", diff: "Hard Demon", class: "hard" },
-
-            // Medium Demon
-            { name: "TAKE A BREATH", author: "by GOD", diff: "Medium Demon", class: "medium" },
-            { name: "RED SPEAR", author: "by GOD", diff: "Medium Demon", class: "medium" },
-            { name: "ABANDONED CITY", author: "by GOD", diff: "Medium Demon", class: "medium" },
-            { name: "THE COLLAB", author: "by sarygdps", diff: "Medium Demon", class: "medium" },
-            { name: "HEADRUSH", author: "by NONAMETY", diff: "Medium Demon", class: "medium" },
-            { name: "PONT", author: "by GOD", diff: "Medium Demon", class: "medium" },
-
-            // Easy Demon
-            { name: "RED WORLD", author: "by sarygdps", diff: "Easy Demon", class: "easy" },
-            { name: "PROFITABLE PASSION", author: "by PARTIZANGD", diff: "Easy Demon", class: "easy" },
-            { name: "BLOCK3KA", author: "by DASUKE344", diff: "Easy Demon", class: "easy" },
-            { name: "GOLDEN EMERALD", author: "by GOD", diff: "Easy Demon", class: "easy" },
-            { name: "BANANCHIKI", author: "by YOGURT", diff: "Easy Demon", class: "easy" },
-            { name: "WONDERLANDS", author: "by GOD", diff: "Easy Demon", class: "easy" }
-        ];
-
+        // Твои настройки Baserow
+        const TABLE_ID = "984514";
+        const API_TOKEN = "lLeay1kQEgI8lOf5IEhdSq7iHoqhHJCy";
+        
+        let demons = [];
         let currentTarget = 1;
         let currentLevel = null;
         let isRolling = false;
 
+        window.onload = async function() {
+            const statusText = document.getElementById('status-text');
+            const btnRoll = document.getElementById('btn-roll');
+            
+            try {
+                const response = await fetch(`https://api.baserow.io/api/database/rows/table/${TABLE_ID}/?user_field_names=true`, {
+                    headers: {
+                        "Authorization": `Token ${API_TOKEN}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error("Ошибка при запросе к Baserow");
+                
+                const data = await response.json();
+                
+                demons = data.results.map(row => {
+                    const diffName = row.Difficulty || "Easy Demon";
+                    return {
+                        name: row.Name || "Без названия",
+                        author: row.Author || "by Unknown",
+                        diff: diffName,
+                        class: getDifficultyClass(diffName)
+                    };
+                });
+
+                if (demons.length === 0) {
+                    statusText.innerText = "Таблица пуста! Добавь уровни.";
+                } else {
+                    statusText.innerText = "Нажми \"КРУТИТЬ\"";
+                    btnRoll.disabled = false;
+                    btnRoll.innerText = "Крутить";
+                }
+                
+            } catch (error) {
+                console.error(error);
+                statusText.innerText = "Ошибка загрузки данных!";
+                statusText.style.color = "#ff3333";
+            }
+        };
+
+        function getDifficultyClass(diff) {
+            const d = diff.toLowerCase();
+            if (d.includes('extreme')) return 'extreme';
+            if (d.includes('insane')) return 'insane';
+            if (d.includes('hard')) return 'hard';
+            if (d.includes('medium')) return 'medium';
+            return 'easy';
+        }
+
         function rollDemon() {
-            if (isRolling || currentTarget > 100) return;
+            if (isRolling || demons.length === 0 || currentTarget > 100) return;
             isRolling = true;
             
             const displayBox = document.getElementById('roulette-box');
@@ -280,8 +295,11 @@
             const historyList = document.getElementById('history-list');
             const historyItem = document.createElement('div');
             historyItem.className = 'history-item';
+            
+            const shortDiff = currentLevel.diff.split(' ')[0];
+            
             historyItem.innerHTML = `
-                <span><span class="difficulty ${currentLevel.class}" style="font-size:10px; padding:2px 5px; margin-right:8px;">${currentLevel.diff.split(' ')[0]}</span> ${currentLevel.name}</span>
+                <span><span class="difficulty ${currentLevel.class}" style="font-size:10px; padding:2px 5px; margin-right:8px;">${shortDiff}</span> ${currentLevel.name}</span>
                 <span class="history-percent">${currentTarget}%</span>
             `;
             historyList.insertBefore(historyItem, historyList.firstChild);
