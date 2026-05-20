@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GD Demon Roulette CS:GO Edition</title>
+    <title>GD Demon Roulette</title>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
@@ -67,7 +67,7 @@
         
         #target-percent { color: #22c55e; }
 
-        /* --- РУЛЕТКА CS:GO --- */
+        /* --- ЛЕНТА РУЛЕТКИ --- */
         .roulette-wrapper {
             position: relative;
             width: 100%;
@@ -80,7 +80,7 @@
             margin-bottom: 30px;
         }
 
-        /* Тени по бокам для эффекта глубины */
+        /* Тени по бокам */
         .roulette-wrapper::before, .roulette-wrapper::after {
             content: '';
             position: absolute;
@@ -92,7 +92,7 @@
         .roulette-wrapper::before { left: 0; background: linear-gradient(to right, #111318 10%, transparent 100%); }
         .roulette-wrapper::after { right: 0; background: linear-gradient(to left, #111318 10%, transparent 100%); }
 
-        /* Желтая линия по центру как в КС */
+        /* Линия по центру */
         .selector-line {
             position: absolute;
             left: 50%;
@@ -109,13 +109,13 @@
             display: flex;
             height: 100%;
             width: max-content;
-            /* Плавность зависит от видеокарты, will-change помогает */
             will-change: transform;
         }
 
-        /* Карточка демона (Скин) */
+        /* Карточка демона */
         .demon-card {
-            width: 220px; /* Строго фиксированная ширина */
+            flex: 0 0 220px; /* Жестко фиксируем ширину карточки */
+            width: 220px;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -124,7 +124,7 @@
             padding: 10px;
             background: linear-gradient(180deg, #1e2026 0%, #16181d 100%);
             border-right: 1px solid #0d0e12;
-            border-bottom: 6px solid #555; /* Линия редкости */
+            border-bottom: 6px solid #555;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
             position: relative;
         }
@@ -145,14 +145,13 @@
             z-index: 2;
         }
 
-        /* Цвета редкости CS:GO */
-        .extreme { border-bottom-color: #eb4b4b; } /* Тайное (Красный) */
-        .insane { border-bottom-color: #d32ce6; } /* Засекреченное (Розовый) */
-        .hard { border-bottom-color: #8847ff; } /* Запрещенное (Фиолетовый) */
-        .medium { border-bottom-color: #4b69ff; } /* Армейское (Синий) */
-        .easy { border-bottom-color: #5e98d9; } /* Промышленное (Голубой) */
+        /* Цвета сложности (как в GD) */
+        .extreme { border-bottom-color: #ef4444; }
+        .insane { border-bottom-color: #d946ef; }
+        .hard { border-bottom-color: #f87171; }
+        .medium { border-bottom-color: #facc15; }
+        .easy { border-bottom-color: #38bdf8; }
 
-        /* Плашка сложности внутри карточки */
         .diff-badge {
             font-size: 12px;
             font-weight: bold;
@@ -288,10 +287,13 @@
                     diff: level.Difficulty || "Easy Demon",
                     class: getDiffClass(level.Difficulty || "")
                 }));
+                
+                if (demons.length === 0) throw new Error("Empty DB");
+                
                 setReadyState();
             } catch (error) {
                 demons = fallbackDemons.map(level => ({ ...level, class: getDiffClass(level.diff) }));
-                document.getElementById("status-overlay").innerText = "ОШИБКА API • ОФФЛАЙН РЕЖИМ";
+                document.getElementById("status-overlay").innerText = "ОШИБКА API • ЛОКАЛЬНАЯ БАЗА";
                 setTimeout(setReadyState, 1500);
             }
         }
@@ -299,7 +301,7 @@
         function setReadyState() {
             document.getElementById("status-overlay").style.display = "none";
             document.getElementById("btn-roll").disabled = false;
-            document.getElementById("btn-roll").innerText = "КРУТИТЬ КЕЙС";
+            document.getElementById("btn-roll").innerText = "КРУТИТЬ РУЛЕТКУ";
             
             const track = document.getElementById("roulette-track");
             track.innerHTML = createCardHTML({name: "ГОТОВ?", author: "Жми кнопку", diff: "???", class: ""});
@@ -308,7 +310,6 @@
         }
 
         function createCardHTML(level) {
-            // Если карточка победная, цвет подсветится в JS после остановки
             return `
                 <div class="demon-card ${level.class}">
                     <div class="level-name">${level.name}</div>
@@ -318,7 +319,7 @@
             `;
         }
 
-        function rollDemon() {
+        document.getElementById("btn-roll").addEventListener("click", () => {
             if (isRolling || currentTarget > 100) return;
             isRolling = true;
 
@@ -330,16 +331,10 @@
             rollBtn.disabled = true;
             doneBtn.style.display = "none";
 
-            // 1. Мгновенно сбрасываем ленту в самое начало
-            track.style.transition = "none";
-            track.style.transform = "translateX(0px)";
-            track.style.justifyContent = "flex-start";
-            track.style.width = "max-content";
-            
-            // 2. Генерируем ленту предметов (60 карточек)
+            // Генерация карточек
             const totalCards = 60; 
-            const winningIndex = 52; // Какая по счету карточка выиграет
-            const cardWidth = 220; // Точная ширина из CSS
+            const winningIndex = 50; 
+            const cardWidth = 220; 
             
             let trackHTML = "";
             for (let i = 0; i < totalCards; i++) {
@@ -349,36 +344,38 @@
             }
             track.innerHTML = trackHTML;
 
-            // 3. Форсируем перерисовку браузера (ВАЖНО ДЛЯ ПЛАВНОСТИ!)
-            void track.offsetWidth; 
+            // Жестко сбрасываем позицию перед стартом анимации
+            track.style.transition = "none";
+            track.style.transform = "translateX(0px)";
+            track.style.justifyContent = "flex-start";
+            track.style.width = "max-content";
 
-            // 4. Высчитываем, куда именно крутить
-            const windowWidth = windowEl.clientWidth;
-            const centerOffset = (windowWidth / 2) - (cardWidth / 2);
-            
-            // Рандомная остановка внутри самой карточки (чтобы не всегда ровно по центру)
-            const randomNudge = Math.floor(Math.random() * (cardWidth - 20)) - ((cardWidth - 20) / 2);
-            const finalPosition = (winningIndex * cardWidth) - centerOffset + randomNudge;
-
-            // 5. Запускаем CS:GO анимацию (8 секунд, кубик-безье для плавного торможения)
-            track.style.transition = "transform 8s cubic-bezier(0.1, 0.9, 0.1, 1)";
-            track.style.transform = `translateX(-${finalPosition}px)`;
-
-            // 6. Ждем 8 секунд, пока рулетка полностью остановится
+            // Даем браузеру время (50мс) "переварить" новый HTML, чтобы анимация сработала на 100%
             setTimeout(() => {
-                isRolling = false;
-                rollBtn.disabled = false;
-                rollBtn.innerText = "СКИП (ПЕРЕКРУТИТЬ)";
-                doneBtn.style.display = "inline-block";
-                
-                // Подсвечиваем выигранную карточку зелёным
-                const winnerCard = document.querySelectorAll('.demon-card')[winningIndex];
-                winnerCard.style.background = "radial-gradient(circle, rgba(34,197,94,0.3) 0%, rgba(0,0,0,0) 100%)";
-                
-            }, 8000); 
-        }
+                const windowWidth = windowEl.clientWidth;
+                const centerOffset = (windowWidth / 2) - (cardWidth / 2);
+                const randomNudge = Math.floor(Math.random() * (cardWidth - 20)) - ((cardWidth - 20) / 2);
+                const finalPosition = (winningIndex * cardWidth) - centerOffset + randomNudge;
 
-        function completeLevel() {
+                // Запуск плавной анимации
+                track.style.transition = "transform 7s cubic-bezier(0.1, 0.9, 0.1, 1)";
+                track.style.transform = `translateX(-${finalPosition}px)`;
+
+                // Ждем окончания прокрутки
+                setTimeout(() => {
+                    isRolling = false;
+                    rollBtn.disabled = false;
+                    rollBtn.innerText = "СКИП (ПЕРЕКРУТИТЬ)";
+                    doneBtn.style.display = "inline-block";
+                    
+                    const winnerCard = track.children[winningIndex];
+                    winnerCard.style.background = "radial-gradient(circle, rgba(34,197,94,0.3) 0%, rgba(0,0,0,0) 100%)";
+                }, 7000); 
+
+            }, 50);
+        });
+
+        document.getElementById("btn-done").addEventListener("click", () => {
             if (!currentLevel) return;
 
             const history = document.getElementById("history-list");
@@ -392,8 +389,8 @@
             currentTarget++;
             document.getElementById("target-percent").innerText = currentTarget > 100 ? "GG!" : currentTarget;
             document.getElementById("btn-done").style.display = "none";
-            document.getElementById("btn-roll").innerText = "КРУТИТЬ КЕЙС";
-        }
+            document.getElementById("btn-roll").innerText = "КРУТИТЬ РУЛЕТКУ";
+        });
 
         window.onload = loadDemons;
     </script>
