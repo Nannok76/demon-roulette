@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GD Demon Roulette PRO</title>
+    <title>GD Demon Roulette CS:GO Edition</title>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
@@ -11,7 +11,7 @@
         * { box-sizing: border-box; }
 
         body {
-            background: radial-gradient(circle at center, #1e1b4b 0%, #020617 100%);
+            background: radial-gradient(circle at center, #1e2024 0%, #0d0e12 100%);
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, sans-serif;
             text-align: center;
@@ -27,158 +27,147 @@
             justify-content: center;
             gap: 20px;
             margin-bottom: 25px;
-            animation: glowPulse 2s infinite alternate;
         }
 
-        @keyframes glowPulse {
-            0% { filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.3)); }
-            100% { filter: drop-shadow(0 0 25px rgba(0, 255, 0, 0.8)); }
-        }
-
-        .site-logo { height: 70px; width: auto; }
+        .site-logo { height: 70px; filter: drop-shadow(0 0 15px rgba(34, 197, 94, 0.6)); }
 
         h1 {
             font-family: 'Righteous', cursive;
             color: #fff;
             font-size: 46px;
-            text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffaa00, 4px 4px 0px #000;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5), 3px 3px 0px #000;
             margin: 0;
             letter-spacing: 2px;
         }
 
         .container {
-            max-width: 850px;
+            max-width: 900px;
             margin: 0 auto;
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(20, 22, 28, 0.9);
             padding: 30px;
-            border-radius: 25px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8), inset 0 0 2px rgba(255,255,255,0.2);
-            border: 2px solid #334155;
-            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            border: 1px solid #2a2d35;
         }
 
         .target-box {
-            background: linear-gradient(90deg, #111, #222, #111);
-            border: 2px solid #ffcc00;
+            background: #111318;
+            border: 1px solid #475569;
+            border-bottom: 3px solid #22c55e;
             display: inline-block;
-            padding: 12px 35px;
-            border-radius: 15px;
+            padding: 10px 30px;
+            border-radius: 8px;
             font-family: 'Righteous', cursive;
-            font-size: 28px;
-            color: #ffcc00;
+            font-size: 26px;
+            color: #fff;
             margin-bottom: 30px;
-            box-shadow: 0 0 20px rgba(255, 204, 0, 0.2), inset 0 0 15px rgba(255, 204, 0, 0.4);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
+        
+        #target-percent { color: #22c55e; }
 
-        /* --- НОВАЯ КРУТАЯ РУЛЕТКА --- */
+        /* --- РУЛЕТКА CS:GO --- */
         .roulette-wrapper {
             position: relative;
             width: 100%;
-            height: 180px;
-            background: #09090b;
-            border-radius: 15px;
-            border: 3px solid #475569;
+            height: 200px;
+            background: #111318;
+            border-radius: 4px;
+            border: 1px solid #000;
             overflow: hidden;
-            box-shadow: inset 0 0 30px #000;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
             margin-bottom: 30px;
         }
 
-        /* Затемнение по краям рулетки */
+        /* Тени по бокам для эффекта глубины */
         .roulette-wrapper::before, .roulette-wrapper::after {
             content: '';
             position: absolute;
             top: 0; bottom: 0;
-            width: 80px;
+            width: 100px;
             z-index: 5;
             pointer-events: none;
         }
-        .roulette-wrapper::before {
-            left: 0;
-            background: linear-gradient(to right, #09090b 10%, transparent 100%);
-        }
-        .roulette-wrapper::after {
-            right: 0;
-            background: linear-gradient(to left, #09090b 10%, transparent 100%);
-        }
+        .roulette-wrapper::before { left: 0; background: linear-gradient(to right, #111318 10%, transparent 100%); }
+        .roulette-wrapper::after { right: 0; background: linear-gradient(to left, #111318 10%, transparent 100%); }
 
-        /* Центральный прицел */
+        /* Желтая линия по центру как в КС */
         .selector-line {
             position: absolute;
             left: 50%;
             top: 0;
             bottom: 0;
-            width: 4px;
-            background: #fff;
+            width: 2px;
+            background: #ffcc00;
             z-index: 10;
             transform: translateX(-50%);
-            box-shadow: 0 0 15px 2px #fff, 0 0 30px 5px #22c55e;
-            border-radius: 2px;
+            box-shadow: 0 0 10px 2px rgba(255, 204, 0, 0.8);
         }
 
         #roulette-track {
             display: flex;
             height: 100%;
             width: max-content;
-            /* Анимация прокрутки настраивается через JS */
+            /* Плавность зависит от видеокарты, will-change помогает */
             will-change: transform;
         }
 
-        /* Карточка демона */
+        /* Карточка демона (Скин) */
         .demon-card {
-            width: 220px; /* Фиксированная ширина для ровной прокрутки */
+            width: 220px; /* Строго фиксированная ширина */
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 10px;
-            border-right: 2px solid #27272a;
-            background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.5) 100%);
+            background: linear-gradient(180deg, #1e2026 0%, #16181d 100%);
+            border-right: 1px solid #0d0e12;
+            border-bottom: 6px solid #555; /* Линия редкости */
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+            position: relative;
         }
 
         .level-name {
             font-family: 'Righteous', cursive;
-            font-size: 26px;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            text-shadow: 2px 2px #000;
+            font-size: 24px;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px #000;
             word-break: break-word;
-            line-height: 1.1;
+            z-index: 2;
         }
 
         .level-author {
             font-size: 14px;
-            color: #94a3b8;
-            margin-bottom: 12px;
-            text-transform: uppercase;
+            color: #718096;
+            margin-bottom: 15px;
+            z-index: 2;
         }
 
-        .difficulty {
-            font-size: 13px;
+        /* Цвета редкости CS:GO */
+        .extreme { border-bottom-color: #eb4b4b; } /* Тайное (Красный) */
+        .insane { border-bottom-color: #d32ce6; } /* Засекреченное (Розовый) */
+        .hard { border-bottom-color: #8847ff; } /* Запрещенное (Фиолетовый) */
+        .medium { border-bottom-color: #4b69ff; } /* Армейское (Синий) */
+        .easy { border-bottom-color: #5e98d9; } /* Промышленное (Голубой) */
+
+        /* Плашка сложности внутри карточки */
+        .diff-badge {
+            font-size: 12px;
             font-weight: bold;
             text-transform: uppercase;
-            padding: 4px 12px;
-            border-radius: 6px;
-            letter-spacing: 1px;
-            background: rgba(0,0,0,0.7);
-            border: 1px solid currentColor;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.6);
+            color: #e2e8f0;
+            z-index: 2;
         }
 
-        /* Цвета */
-        .extreme { color: #ef4444; text-shadow: 0 0 8px #ef4444; border-color: #ef4444; }
-        .insane { color: #d946ef; text-shadow: 0 0 8px #d946ef; border-color: #d946ef; }
-        .hard { color: #f87171; text-shadow: 0 0 8px #f87171; border-color: #f87171; }
-        .medium { color: #facc15; text-shadow: 0 0 8px #facc15; border-color: #facc15; }
-        .easy { color: #38bdf8; text-shadow: 0 0 8px #38bdf8; border-color: #38bdf8; }
-
-        /* Заглушка до загрузки */
         #status-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: #09090b;
+            background: #111318;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -188,70 +177,48 @@
             z-index: 20;
         }
 
-        /* Кнопки */
-        .controls {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+        .controls { display: flex; gap: 20px; justify-content: center; }
 
         button {
             font-family: 'Righteous', cursive;
             border: none;
-            padding: 16px 40px;
-            font-size: 22px;
-            border-radius: 12px;
+            padding: 15px 35px;
+            font-size: 20px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: 0.15s all ease;
+            transition: 0.1s;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            color: #fff;
         }
 
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .btn-roll {
-            background: linear-gradient(to bottom, #3b82f6, #1d4ed8);
-            color: white;
-            box-shadow: 0 6px 0 #1e3a8a, 0 15px 20px rgba(0,0,0,0.4);
+            background: #3b82f6;
+            box-shadow: 0 4px 0 #1e3a8a;
         }
-
-        .btn-roll:active:not(:disabled) {
-            transform: translateY(6px);
-            box-shadow: 0 0px 0 #1e3a8a, 0 5px 10px rgba(0,0,0,0.4);
-        }
+        .btn-roll:active:not(:disabled) { transform: translateY(4px); box-shadow: none; }
 
         .btn-done {
-            background: linear-gradient(to bottom, #22c55e, #15803d);
-            color: white;
-            box-shadow: 0 6px 0 #14532d, 0 15px 20px rgba(0,0,0,0.4);
+            background: #22c55e;
+            box-shadow: 0 4px 0 #14532d;
             display: none;
         }
+        .btn-done:active { transform: translateY(4px); box-shadow: none; }
 
-        .btn-done:active {
-            transform: translateY(6px);
-            box-shadow: 0 0px 0 #14532d, 0 5px 10px rgba(0,0,0,0.4);
-        }
-
-        /* История */
         .history-panel {
-            margin-top: 40px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 15px;
+            margin-top: 30px;
+            background: #16181d;
+            border-radius: 8px;
             padding: 20px;
             text-align: left;
             max-height: 200px;
             overflow-y: auto;
-            border: 1px solid #334155;
+            border: 1px solid #2a2d35;
         }
-
-        .history-panel h3 { margin-top: 0; text-align: center; color: #cbd5e1; }
-        .history-item { padding: 10px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center;}
-        .history-percent { font-weight: bold; color: #ffcc00; font-size: 18px;}
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        .history-item { padding: 10px; border-bottom: 1px solid #1e2026; display: flex; justify-content: space-between; }
+        .history-percent { font-weight: bold; color: #22c55e; }
     </style>
 </head>
 
@@ -267,9 +234,8 @@
 
         <div class="roulette-wrapper" id="roulette-window">
             <div class="selector-line"></div>
-            <div id="status-overlay">Подключение к Базе Данных...</div>
-            <div id="roulette-track">
-                </div>
+            <div id="status-overlay">ПОДКЛЮЧЕНИЕ К БАЗЕ...</div>
+            <div id="roulette-track"></div>
         </div>
 
         <div class="controls">
@@ -278,7 +244,6 @@
         </div>
 
         <div class="history-panel">
-            <h3>ИСТОРИЯ ПРОХОЖДЕНИЙ</h3>
             <div id="history-list"></div>
         </div>
     </div>
@@ -309,15 +274,6 @@
             return "easy";
         }
 
-        function prepareDemons(list) {
-            return list.map(level => ({
-                name: level.name || level.Name || "Без названия",
-                author: level.author || level.Author || "by Unknown",
-                diff: level.diff || level.Difficulty || "Easy Demon",
-                class: getDiffClass(level.diff || level.Difficulty || "Easy Demon")
-            }));
-        }
-
         async function loadDemons() {
             try {
                 const response = await fetch(`https://api.baserow.io/api/database/rows/table/${TABLE_ID}/?user_field_names=true`, {
@@ -325,24 +281,26 @@
                 });
                 if (!response.ok) throw new Error("API Error");
                 const data = await response.json();
-                if (!data.results || data.results.length === 0) throw new Error("Empty database");
                 
-                demons = prepareDemons(data.results);
+                demons = data.results.map(level => ({
+                    name: level.Name || "Без названия",
+                    author: level.Author || "by Unknown",
+                    diff: level.Difficulty || "Easy Demon",
+                    class: getDiffClass(level.Difficulty || "")
+                }));
                 setReadyState();
             } catch (error) {
-                demons = prepareDemons(fallbackDemons);
-                document.getElementById("status-overlay").innerText = "API ОШИБКА • ЛОКАЛЬНАЯ БАЗА";
+                demons = fallbackDemons.map(level => ({ ...level, class: getDiffClass(level.diff) }));
+                document.getElementById("status-overlay").innerText = "ОШИБКА API • ОФФЛАЙН РЕЖИМ";
                 setTimeout(setReadyState, 1500);
             }
         }
 
         function setReadyState() {
             document.getElementById("status-overlay").style.display = "none";
-            const rollBtn = document.getElementById("btn-roll");
-            rollBtn.disabled = false;
-            rollBtn.innerText = "КРУТИТЬ РУЛЕТКУ";
+            document.getElementById("btn-roll").disabled = false;
+            document.getElementById("btn-roll").innerText = "КРУТИТЬ КЕЙС";
             
-            // Ставим стартовую заглушку
             const track = document.getElementById("roulette-track");
             track.innerHTML = createCardHTML({name: "ГОТОВ?", author: "Жми кнопку", diff: "???", class: ""});
             track.style.justifyContent = "center";
@@ -350,17 +308,14 @@
         }
 
         function createCardHTML(level) {
+            // Если карточка победная, цвет подсветится в JS после остановки
             return `
-                <div class="demon-card">
+                <div class="demon-card ${level.class}">
                     <div class="level-name">${level.name}</div>
                     <div class="level-author">${level.author}</div>
-                    <div class="difficulty ${level.class}">${level.diff}</div>
+                    <div class="diff-badge">${level.diff}</div>
                 </div>
             `;
-        }
-
-        function randomLevel() {
-            return demons[Math.floor(Math.random() * demons.length)];
         }
 
         function rollDemon() {
@@ -375,71 +330,61 @@
             rollBtn.disabled = true;
             doneBtn.style.display = "none";
 
-            // Сбрасываем трек
+            // 1. Мгновенно сбрасываем ленту в самое начало
             track.style.transition = "none";
-            track.style.transform = "translateX(0)";
+            track.style.transform = "translateX(0px)";
             track.style.justifyContent = "flex-start";
             track.style.width = "max-content";
-            track.innerHTML = "";
-
-            // Настройки анимации
-            const totalCards = 50; // Сколько карточек пролетит
-            const winningIndex = 43; // Индекс победной карточки
-            const cardWidth = 220; // Ширина .demon-card из CSS
-
+            
+            // 2. Генерируем ленту предметов (60 карточек)
+            const totalCards = 60; 
+            const winningIndex = 52; // Какая по счету карточка выиграет
+            const cardWidth = 220; // Точная ширина из CSS
+            
             let trackHTML = "";
             for (let i = 0; i < totalCards; i++) {
-                let lvl = randomLevel();
-                if (i === winningIndex) {
-                    currentLevel = lvl; // Сохраняем победный уровень
-                }
+                let lvl = demons[Math.floor(Math.random() * demons.length)];
+                if (i === winningIndex) currentLevel = lvl;
                 trackHTML += createCardHTML(lvl);
             }
             track.innerHTML = trackHTML;
 
-            // Принудительный рендер перед запуском анимации
-            track.offsetHeight; 
+            // 3. Форсируем перерисовку браузера (ВАЖНО ДЛЯ ПЛАВНОСТИ!)
+            void track.offsetWidth; 
 
-            // Вычисляем смещение
-            // Нам нужно, чтобы winningIndex оказался ровно по центру окна
+            // 4. Высчитываем, куда именно крутить
             const windowWidth = windowEl.clientWidth;
             const centerOffset = (windowWidth / 2) - (cardWidth / 2);
             
-            // Добавим немного рандома, чтобы не всегда останавливалось ровно по центру карточки
-            const randomNudge = Math.floor(Math.random() * (cardWidth - 40)) - ((cardWidth - 40) / 2);
-            
+            // Рандомная остановка внутри самой карточки (чтобы не всегда ровно по центру)
+            const randomNudge = Math.floor(Math.random() * (cardWidth - 20)) - ((cardWidth - 20) / 2);
             const finalPosition = (winningIndex * cardWidth) - centerOffset + randomNudge;
 
-            // Запускаем плавное вращение (7 секунд, с замедлением в конце)
-            track.style.transition = "transform 7s cubic-bezier(0.05, 0.9, 0.1, 1)";
+            // 5. Запускаем CS:GO анимацию (8 секунд, кубик-безье для плавного торможения)
+            track.style.transition = "transform 8s cubic-bezier(0.1, 0.9, 0.1, 1)";
             track.style.transform = `translateX(-${finalPosition}px)`;
 
-            // Ждем завершения анимации
+            // 6. Ждем 8 секунд, пока рулетка полностью остановится
             setTimeout(() => {
                 isRolling = false;
                 rollBtn.disabled = false;
                 rollBtn.innerText = "СКИП (ПЕРЕКРУТИТЬ)";
                 doneBtn.style.display = "inline-block";
                 
-                // Подсвечиваем победную рамку
-                document.querySelectorAll('.demon-card')[winningIndex].style.background = "linear-gradient(180deg, rgba(34,197,94,0.2) 0%, rgba(0,0,0,0.8) 100%)";
-                document.querySelectorAll('.demon-card')[winningIndex].style.border = "2px solid #22c55e";
-
-            }, 7000); // 7000мс = 7 секунд
+                // Подсвечиваем выигранную карточку зелёным
+                const winnerCard = document.querySelectorAll('.demon-card')[winningIndex];
+                winnerCard.style.background = "radial-gradient(circle, rgba(34,197,94,0.3) 0%, rgba(0,0,0,0) 100%)";
+                
+            }, 8000); 
         }
 
         function completeLevel() {
             if (!currentLevel) return;
 
             const history = document.getElementById("history-list");
-            const shortDiff = currentLevel.diff.split(' ')[0];
-
             history.innerHTML = `
                 <div class="history-item">
-                    <span>
-                        <span class="difficulty ${currentLevel.class}" style="font-size:10px; padding:2px 6px; margin-right:10px;">${shortDiff}</span>
-                        ${currentLevel.name}
-                    </span>
+                    <span>${currentLevel.name}</span>
                     <span class="history-percent">${currentTarget}%</span>
                 </div>
             ` + history.innerHTML;
@@ -447,7 +392,7 @@
             currentTarget++;
             document.getElementById("target-percent").innerText = currentTarget > 100 ? "GG!" : currentTarget;
             document.getElementById("btn-done").style.display = "none";
-            document.getElementById("btn-roll").innerText = "КРУТИТЬ РУЛЕТКУ";
+            document.getElementById("btn-roll").innerText = "КРУТИТЬ КЕЙС";
         }
 
         window.onload = loadDemons;
